@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8"?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"    
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.sy.mapper.common.UserMapper">
+	
+    <!-- 分页 按条件搜索 -->
+     <select id="getUserList" resultType="user" parameterType="user">
+		select * from au_user  
+		<trim prefix="where" prefixOverrides="and | or">
+			<if test="userName != null">
+			 and userName like  #{userName}
+			</if>
+			<if test="loginCode != null">
+			 and loginCode like #{loginCode}
+			</if>
+			<if test="roleId != null">
+			  and roleId = #{roleId}
+			</if>
+			<if test="isStart != null">
+			  and isStart = #{isStart}
+			</if>
+			<if test="referCode != null">
+			  and referCode like #{referCode}
+			</if>
+			<if test="referId != null">
+			  and referId = #{referId}
+			</if>
+			<if test="userType != null">
+			  and userType = #{userType}
+			</if>
+		 </trim>
+		 order by createTime desc limit #{starNum},#{pageSize}
+	</select>
+
+	<!--分页:按条件查询用户记录数-->
+	<select id="count" resultType="int" parameterType="user">
+		select count(1) from au_user
+		<trim prefix="where" prefixOverrides="and | or">
+			<if test="userName != null">
+				and userName like  CONCAT('%',#{userName},'%')
+			</if>
+			<if test="loginCode != null">
+				and loginCode like  CONCAT('%',#{loginCode},'%')
+			</if>
+			<if test="roleId != null">
+				and roleId = #{roleId}
+			</if>
+			<if test="isStart != null">
+				and isStart = #{isStart}
+			</if>
+			<if test="referCode != null">
+				and referCode like  CONCAT('%',#{referCode},'%')
+			</if>
+			<if test="referId != null">
+				and referId = #{referId}
+			</if>
+			<if test="userType != null">
+				and userType = #{userType}
+			</if>
+		</trim>
+	</select>
+	
+	
+	
+	<!-- 根据用户名和密码查询合法用户 -->
+	<select id="getLoginUser" resultType="user" parameterType="user">
+		select * from au_user where loginCode = #{loginCode} and password = #{password}
+    </select>
+
+	<!-- 根据主键查询用户 -->
+	<select id="getUserById" resultType="user" parameterType="user">
+		select * from au_user where id = #{id}
+    </select>
+    
+    <!-- 增加用户 -->
+	<insert id="addUser" parameterType="user">
+		insert into au_user (loginCode,password,password2,userName,sex,birthday,cardType,
+							 cardTypeName,idCard,country,mobile,email,userAddress,postCode,
+							 createTime,referId,referCode,roleId,roleName,userType,userTypeName,
+							 isStart,lastUpdateTime,lastLoginTime,bankName,accountHolder,bankAccount,idCardPicPath,bankPicPath) values 
+							 (#{loginCode},#{password},#{password2},#{userName},#{sex},#{birthday},
+							 #{cardType},#{cardTypeName},#{idCard},#{country},#{mobile},#{email},#{userAddress},
+							 #{postCode},#{createTime},#{referId},#{referCode},#{roleId},#{roleName},#{userType},
+							 #{userTypeName},#{isStart},#{lastUpdateTime},#{lastLoginTime},#{bankName},#{accountHolder},#{bankAccount},#{idCardPicPath},#{bankPicPath})
+	</insert>
+    
+    <!-- 根据Id删除用户 -->
+	<delete id="deleteUser" parameterType="user">
+		delete from au_user where id = #{id}
+	</delete>
+    
+    
+    <!-- 修改用户 -->
+	<update id="modifyUser" parameterType="user">
+		update au_user 
+			<set>
+				 <if test="loginCode != null"> loginCode = #{loginCode},</if>
+				 <if test="userName != null"> userName = #{userName},</if>
+				 <if test="password != null"> password = #{password},</if>
+				 <if test="password2 != null"> password2 = #{password2},</if>
+				 <if test="sex != null"> sex = #{sex},</if>
+				 <if test="birthday != null"> birthday = #{birthday},</if>
+				 <if test="cardType != null"> cardType = #{cardType},</if>
+				 <if test="cardTypeName != null"> cardTypeName = #{cardTypeName},</if>
+				 <if test="idCard != null"> idCard = #{idCard},</if>
+				 <if test="country != null"> country = #{country},</if>
+				 <if test="mobile != null"> mobile = #{mobile},</if>
+				 <if test="email != null"> email = #{email},</if>
+				 <if test="userAddress != null"> userAddress = #{userAddress},</if>
+				 <if test="postCode != null"> postCode = #{postCode},</if>
+				 <if test="createTime != null"> createTime = #{createTime},</if>
+				 <if test="referId != null"> referId = #{referId},</if>
+				 <if test="referCode != null"> referCode = #{referCode},</if>
+				 <if test="roleId != null"> roleId = #{roleId},</if>
+				 <if test="roleName != null"> roleName = #{roleName},</if>
+				 <if test="userType != null"> userType = #{userType},</if>
+				 <if test="userTypeName != null"> userTypeName = #{userTypeName},</if>
+			 	 <if test="isStart != null"> isStart = #{isStart},</if>
+			 	 <if test="lastUpdateTime != null"> lastUpdateTime = #{lastUpdateTime},</if>
+			 	 <if test="lastLoginTime != null"> lastLoginTime = #{lastLoginTime},</if>
+			 	 <if test="bankName != null"> bankName = #{bankName},</if>
+			 	 <if test="accountHolder != null"> accountHolder = #{accountHolder},</if>
+			 	 <if test="bankAccount != null"> bankAccount = #{bankAccount},</if>
+			 	 <if test="idCardPicPath != null"> idCardPicPath = #{idCardPicPath},</if>
+			 	 <if test="bankPicPath != null"> bankPicPath = #{bankPicPath}</if>
+		     </set>
+		  	where id = #{id}
+	</update>
+	
+	<!-- 更改用户的角色名称 -->
+	<update id="modifyUserRole" parameterType="user">
+		update au_user set roleName = #{roleName} where roleId = #{roleId}
+	</update>
+	
+	
+	<!-- 更新用户的图片信息 -->
+	<update id="delUserPic" parameterType="user">
+		update au_user 
+			<set>
+			 	 <if test="idCardPicPath != null"> idCardPicPath = null,</if>
+			 	 <if test="bankPicPath != null"> bankPicPath = null</if>
+		     </set>
+		  	where id = #{id}
+	</update>
+
+
+	<!--根据用户名或Id查询用户是否存在-->
+	<select id="loginCodeIsExit" resultType="int" parameterType="user">
+		select count(1) from au_user
+			<trim prefix="where" prefixOverrides="and | or">
+				<if test="loginCode != null">
+				  and loginCode = #{loginCode}
+				</if>
+				<if test="id != null">
+				  and id != #{id}
+				</if>
+				<if test="isStart != null">
+				  and isStart = 1
+				</if>
+			</trim>
+	</select>
+	
+	<!-- 搜索框的支持 -->
+	<select id="getUserListBySearch" resultType="user" parameterType="user">
+		select * from au_user 
+		<trim prefix="where" prefixOverrides="and | or">
+			<if test="userName != null">
+			 and userName like #{userName}
+			</if>
+			<if test="loginCode != null">
+			 and loginCode like #{loginCode}
+			</if>
+			<if test="roleId != null">
+			  and roleId = #{roleId}
+			</if>
+			<if test="isStart != null">
+			  and isStart = #{isStart}
+			</if>
+			<if test="referCode != null">
+			  and referCode like #{referCode}
+			</if>
+			<if test="referId != null">
+			  and referId = #{referId}
+			</if>
+			<if test="userType != null">
+			  and userType = #{userType}
+			</if>
+		</trim>
+	</select>
+	
+</mapper>  
